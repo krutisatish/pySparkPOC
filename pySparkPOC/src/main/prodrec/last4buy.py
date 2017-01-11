@@ -1,7 +1,7 @@
 
 '''code to be executed from hive
     
-    CREATE EXTERNAL TABLE IF NOT EXISTS last4buy (div_nbr string,customer_number string,dept_number string,product_number string,last_purchase_date date,last_purchase_price string) ROW FORMAT DELIMITED FIELDS TERMINATED BY  '\t' LOCATION 's3://aws.usf.qa.data/lastbuy/' TBLPROPERTIES ('serialization.null.format'='');    
+    CREATE EXTERNAL TABLE IF NOT EXISTS last4buy (div_nbr string,customer_number string,dept_number string,product_number string,last_purchase_date date,last_purchase_price string) ROW FORMAT DELIMITED FIELDS TERMINATED BY  '\t' LOCATION 's3://krutisatish/lastbuy/' TBLPROPERTIES ('serialization.null.format'='');    
     
     CREATE EXTERNAL TABLE IF NOT EXISTS last4buy_dynamo (identifier string, purchaseDate string) STORED BY 'org.apache.hadoop.hive.dynamodb.DynamoDBStorageHandler' TBLPROPERTIES ('dynamodb.table.name' = 'productrecos_lastbuy_qa', 'dynamodb.column.mapping' ='identifier:identifier,purchaseDate:purchaseDate');    
     
