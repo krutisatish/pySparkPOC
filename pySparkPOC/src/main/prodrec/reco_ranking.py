@@ -39,7 +39,7 @@ if __name__ == '__main__':
         sys.exit();
     else:
         
-        reco_rank_tbl = sqlContext.sql("CREATE EXTERNAL TABLE IF NOT EXISTS reco_rank (precimaId string,divisionNumber string,customerNumber string,recommendationType string,rank string) ROW FORMAT DELIMITED FIELDS TERMINATED BY  '\t' LOCATION 's3://aws.usf.data/usf_sfdc_reco_ranking/' TBLPROPERTIES ('serialization.null.format'='', 'skip.header.line.count'='2')")    
+        reco_rank_tbl = sqlContext.sql("CREATE EXTERNAL TABLE IF NOT EXISTS reco_rank (precimaId string,divisionNumber string,customerNumber string,recommendationType string,rank string) ROW FORMAT DELIMITED FIELDS TERMINATED BY  '\t' LOCATION 's3://krutisatish/detail_file/' TBLPROPERTIES ('serialization.null.format'='', 'skip.header.line.count'='2')")    
         recData = sqlContext.sql("SELECT CONCAT(lpad(divisionNumber,6,0),'_',lpad(customerNumber,10,0)) AS identifier,recommendationType, rank FROM reco_rank WHERE lower(precimaId) != 'precima_id' and lower(precimaId) NOT LIKE '%usf_sfdc_reco_ranking%'")
             
         schema = ("recommendationType","rank")
@@ -51,13 +51,10 @@ if __name__ == '__main__':
         scoopcmbn = RDDkv.combineByKey(lambda x: [(x)],
                                                 lambda l,x: l + [(x)],
                                                 lambda l1, l2: l1 + l2)
+                
         
         
-        RDDformatted = scoopcmbn.map(lambda (k,v) : k + '~{"recommendationType": "My Kitchen", "rank": "1"}|' + "|".join(v)).repartition(300)
-        
-        
-        
-        storeRDD = RDDformatted.saveAsTextFile(sys.argv[1])
+        storeRDD = scoopcmbn.saveAsTextFile(sys.argv[1])
         
         
         sc.stop()
